@@ -4,8 +4,8 @@ import React, { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { MatrixQAResponse } from "@/lib/types";
 import { Citation } from "./Citation";
-import { useChat, Message as VercelMessage } from "ai/react";
-import { Loader2 } from "lucide-react";
+import { useChat } from "ai/react";
+
 interface QAChatInterfaceProps {
   sheetId: string;
   onCitationClick: (blockId: string) => void;
@@ -37,10 +37,7 @@ export const QAChatInterface: React.FC<QAChatInterfaceProps> = ({
     input,
     handleInputChange,
     handleSubmit: handleAISubmit,
-    isLoading,
-    setMessages,
-    reload,
-    stop
+    isLoading
   } = useChat({
     api: "/api/qa",
     body: {
@@ -267,7 +264,6 @@ export const QAChatInterface: React.FC<QAChatInterfaceProps> = ({
                     d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
                   ></path>
                 </svg>
-                {/* <Loader2 className='w-4 h-4' /> */}
                 Send
               </span>
             ) : (

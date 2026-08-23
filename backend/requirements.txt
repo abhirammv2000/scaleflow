@@ -16,7 +16,12 @@ xgboost
 joblib
 shap
 
-apache-airflow[postgres,gcp]
+# Keep this in sync with AIRFLOW_VERSION in backend/config/Dockerfile and
+# AIRFLOW_IMAGE_NAME in docker-compose.yaml - pinning here (and installing
+# against Airflow's constraints file, see the Dockerfile) is what stops a
+# plain `pip install` from silently upgrading Airflow past the image it's
+# layered onto and desyncing the Celery cluster's services from each other.
+apache-airflow[postgres,gcp]==2.10.5
 tqdm                # Progress bars in loops
 loguru              # Cleaner logging
 yfinance

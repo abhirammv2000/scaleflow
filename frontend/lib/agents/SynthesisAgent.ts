@@ -4,16 +4,6 @@ import { Evidence } from "@/lib/types";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const SYNTHESIS_MODEL = "gpt-4o";
 
-const parseNumericValue = (valueString: string | undefined): number | null => {
-  if (!valueString) return null;
-
-  const cleaned = String(valueString)
-    .replace(/\[cell:.*?\]/g, "")
-    .replace(/[^0-9.-]+/g, "");
-  const num = parseFloat(cleaned);
-  return isNaN(num) ? null : num;
-};
-
 export class SynthesisAgent {
   async synthesizeAnswer(
     userQuery: string,
@@ -115,13 +105,7 @@ ${evidenceContext}
         throw new Error("Synthesis agent returned empty content.");
       }
 
-      let finalAnswer = answer.trim();
-
-      if (
-        finalAnswer.toLowerCase().includes("total") ||
-        finalAnswer.toLowerCase().includes("average")
-      ) {
-      }
+      const finalAnswer = answer.trim();
 
       console.log("Synthesized Answer (Comtrade):", finalAnswer);
       return finalAnswer;

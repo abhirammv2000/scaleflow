@@ -1,8 +1,9 @@
 import { BlockService } from "@/lib/services/BlockService";
 import { EmbeddingService } from "@/lib/services/EmbeddingService";
 import { queryEmbeddings, PineconeMetadata } from "@/lib/vectorDb/pinecone";
-import { Evidence, CellBlock, BlockTypeEnum, Block } from "@/lib/types";
+import { Evidence, CellBlock, BlockTypeEnum } from "@/lib/types";
 import { RetrievalPlan } from "./ReasoningAgent";
+import { DEFAULT_ORG_ID } from "@/lib/constants";
 
 const UUID_REGEX =
   /^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/;
@@ -63,7 +64,7 @@ export class RetrievalAgent {
 
           const vectorFilter: Partial<PineconeMetadata> = {
             sheetId,
-            orgId: "rc_org_1"
+            orgId: DEFAULT_ORG_ID
           };
 
           if (step.filters.reporterISO)

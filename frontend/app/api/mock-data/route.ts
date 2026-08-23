@@ -13,7 +13,7 @@ import {
   RowBlock,
   SheetBlock
 } from "@/lib/types";
-import { v4 as uuidv4 } from "uuid";
+import { DEFAULT_ORG_ID } from "@/lib/constants";
 
 const reporters = [
   { code: 36, iso: "AUS", desc: "Australia" },
@@ -395,7 +395,7 @@ export async function POST(request: NextRequest) {
           blockId: row.rowId,
           rowId: row.rowId,
           sheetId: sheetId,
-          orgId: "rc_org_1",
+          orgId: DEFAULT_ORG_ID,
           contentSnippet: rowText.substring(0, 150),
           isRowLevel: true,
           columnIds: row.cells.map((cell) => cell.columnId),
@@ -440,7 +440,7 @@ export async function POST(request: NextRequest) {
                 rowId: row.rowId,
                 columnIds: [cell.columnId],
                 sheetId: sheetId,
-                orgId: "rc_org_1",
+                orgId: DEFAULT_ORG_ID,
                 contentSnippet: contextualText.substring(0, 150),
                 columnName: cell.columnName,
                 isRowLevel: false,

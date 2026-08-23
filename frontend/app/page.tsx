@@ -2,10 +2,11 @@
 import Link from "next/link";
 import { BlockService } from "@/lib/services/BlockService";
 import { SheetBlock } from "@/lib/types";
+import { DEFAULT_ORG_ID } from "@/lib/constants";
 
 async function getSheets(): Promise<SheetBlock[]> {
   const blockService = new BlockService();
-  const orgId = "rc_org_1";
+  const orgId = DEFAULT_ORG_ID;
   try {
     const sheets = await blockService.getAllSheetsWithRowCount(orgId);
     return sheets;
@@ -48,8 +49,7 @@ export default async function HomePage() {
                     </p>
                   </div>
                   <div className='bg-[#252525] px-4 py-2 text-right text-xs text-gray-400 border-t border-[#2d2d2d]'>
-                    {/* @ts-ignore */}
-                    {sheet.properties?.rowCount ?? "..."} {/* @ts-ignore */}
+                    {sheet.properties?.rowCount ?? "..."}{" "}
                     {sheet.properties?.rowCount === 1 ? "row" : "rows"}
                   </div>
                 </div>
