@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { BlockService } from "@/lib/services/BlockService";
 import { SheetPageClient } from "./SheetPageClient";
 import { CellBlock, RowBlock, ColumnBlock, SheetBlock } from "@/lib/types";
+import { DEFAULT_ORG_ID } from "@/lib/constants";
 
 interface SheetData {
   sheet: SheetBlock;
@@ -74,7 +75,7 @@ export default async function SheetPage({
   params: Promise<{ sheetId: string }>;
 }) {
   const { sheetId } = await params;
-  const orgId = "rc_org_1";
+  const orgId = DEFAULT_ORG_ID;
 
   try {
     // Fetch data server-side

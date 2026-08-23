@@ -3,16 +3,10 @@ import { EmbeddingService } from "./EmbeddingService";
 import { ReasoningAgent, RetrievalPlan } from "@/lib/agents/ReasoningAgent";
 import { RetrievalAgent } from "@/lib/agents/RetrievalAgent";
 import { SynthesisAgent } from "@/lib/agents/SynthesisAgent";
-import {
-  MatrixQARequest,
-  MatrixQAResponse,
-  Evidence,
-  CellBlock,
-  BlockTypeEnum
-} from "@/lib/types";
+import { MatrixQARequest, MatrixQAResponse, Evidence } from "@/lib/types";
 import { v4 as uuidv4 } from "uuid";
 import { ChatOpenAI } from "@langchain/openai";
-import { LangChainStream, StreamingTextResponse } from "ai";
+import { LangChainStream } from "ai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { RunnableSequence } from "@langchain/core/runnables";
@@ -52,7 +46,7 @@ export class MatrixQAService {
     this.synthesisAgent = new SynthesisAgent();
   }
 
-  async processQuery(request: MatrixQARequest): Promise<MatrixQAResponse> {
+  async processQuery(): Promise<MatrixQAResponse> {
     throw new Error(
       "Non-streaming processQuery not fully updated for Comtrade."
     );
@@ -138,7 +132,7 @@ export class MatrixQAService {
                 column.id
               );
               sampleValues.push(cell?.properties?.value);
-            } catch (cellError) {
+            } catch {
               sampleValues.push(null);
             }
           }

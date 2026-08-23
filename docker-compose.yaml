@@ -21,14 +21,19 @@
 # WARNING: This configuration is for local development. Do not use it in a production deployment.
 #
 # This configuration supports basic configuration using environment variables or an .env file
-# The following variables are supported:
+# The following variables are supported (see .env.example):
 #
-# AIRFLOW_IMAGE_NAME           - Docker image name used to run Airflow.
-#                                Default: apache/airflow:2.10.5
+# AIRFLOW_IMAGE_NAME           - Tag to build/run the ScaleFlow Airflow image as.
+#                                Default: scaleflow/airflow:2.10.5
 # AIRFLOW_UID                  - User ID in Airflow containers
 #                                Default: 50000
 # AIRFLOW_PROJ_DIR             - Base path to which all the files will be volumed.
 #                                Default: .
+# AIRFLOW_WEBSERVER_SECRET_KEY - Flask secret key for the webserver session. Set a real
+#                                random value in your .env for anything beyond local use.
+# DATASETS_DIR                 - Path to the (large, not-committed) raw datasets used by the
+#                                stress-test / ingestion DAGs. Default: ./backend/datasets
+#                                See backend/datasets/readme.md for the expected layout.
 # Those configurations are useful mostly in case of standalone testing/running Airflow in test/try-out mode
 #
 # _AIRFLOW_WWW_USER_USERNAME   - Username for the administrator account (if requested).
@@ -46,11 +51,14 @@
 ---
 x-airflow-common:
   &airflow-common
-  # In order to add custom dependencies or upgrade provider packages you can use your extended image.
-  # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
-  # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
-  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.10.5}
-  # build: .
+  # Built locally from backend/config/Dockerfile, which layers backend/requirements.txt
+  # (pandas, xgboost, shap, yfinance, ...) on top of the upstream Airflow image. Every
+  # service below shares this same image/build so DAG parsing (scheduler) and task
+  # execution (worker) both have the packages the DAGs actually import.
+  image: ${AIRFLOW_IMAGE_NAME:-scaleflow/airflow:2.10.5}
+  build:
+    context: ./backend
+    dockerfile: config/Dockerfile
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
@@ -58,7 +66,7 @@ x-airflow-common:
     AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
     AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
     AIRFLOW__CORE__FERNET_KEY: ''
-    AIRFLOW__WEBSERVER__SECRET_KEY: airflow_secret_2809
+    AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_WEBSERVER_SECRET_KEY:-please-change-this-secret-key-in-your-env-file}
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
@@ -74,10 +82,10 @@ x-airflow-common:
     # If you want to use it, outcomment it and replace airflow.cfg with the name of your config file
     # AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
   volumes:
-    - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
-    - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
-    - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
-    - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
+    - ${AIRFLOW_PROJ_DIR:-.}/backend/dags:/opt/airflow/dags
+    - ${AIRFLOW_PROJ_DIR:-.}/backend/logs:/opt/airflow/logs
+    - ${AIRFLOW_PROJ_DIR:-.}/backend/config:/opt/airflow/config
+    - ${AIRFLOW_PROJ_DIR:-.}/backend/plugins:/opt/airflow/plugins
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
@@ -127,21 +135,21 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
-    build:
-      context: .
-      dockerfile: Dockerfile
     volumes:
-      - ./dags:/opt/airflow/dags
-      - ./scripts:/opt/airflow/scripts
-      - ./helper_scripts:/opt/airflow/helper_scripts
-      - /mnt/e/MASTERS/CU_Boulder_Acads/Semester_4/BDA/Project_Docs/Datasets/yahoo_finance_dataset/ticker_data_individual:/opt/airflow/yahoo_finance_dataset/ticker_data_individual
-      - /mnt/e/MASTERS/CU_Boulder_Acads/Semester_4/BDA/Project_Docs/Datasets/yahoo_finance_dataset/ticker_data_combined:/opt/airflow/yahoo_finance_dataset/ticker_data_combined
-      - /mnt/e/MASTERS/CU_Boulder_Acads/Semester_4/BDA/Project_Docs/Datasets/stress_testing_data/super_light:/opt/airflow/stress_testing_data/super_light
-      - /mnt/e/MASTERS/CU_Boulder_Acads/Semester_4/BDA/Project_Docs/Datasets/stress_testing_data/light:/opt/airflow/stress_testing_data/light
-      - /mnt/e/MASTERS/CU_Boulder_Acads/Semester_4/BDA/Project_Docs/Datasets/stress_testing_data/slightly_heavy:/opt/airflow/stress_testing_data/slightly_heavy
-      - /mnt/e/MASTERS/CU_Boulder_Acads/Semester_4/BDA/Project_Docs/Datasets/stress_testing_data/heavy:/opt/airflow/stress_testing_data/heavy
-      - /mnt/e/MASTERS/CU_Boulder_Acads/Semester_4/BDA/Project_Docs/Datasets/stress_testing_results:/opt/airflow/stress_testing_results
-      - ./requirements.txt:/requirements.txt
+      - ${AIRFLOW_PROJ_DIR:-.}/backend/dags:/opt/airflow/dags
+      - ${AIRFLOW_PROJ_DIR:-.}/backend/logs:/opt/airflow/logs
+      - ${AIRFLOW_PROJ_DIR:-.}/backend/config:/opt/airflow/config
+      - ${AIRFLOW_PROJ_DIR:-.}/backend/plugins:/opt/airflow/plugins
+      - ${AIRFLOW_PROJ_DIR:-.}/backend/scripts:/opt/airflow/scripts
+      - ${AIRFLOW_PROJ_DIR:-.}/backend/requirements.txt:/opt/airflow/requirements.txt
+      - ${DATASETS_DIR:-./backend/datasets}/yahoo_finance_dataset/ticker_data_individual:/opt/airflow/yahoo_finance_dataset/ticker_data_individual
+      - ${DATASETS_DIR:-./backend/datasets}/yahoo_finance_dataset/ticker_data_combined:/opt/airflow/yahoo_finance_dataset/ticker_data_combined
+      - ${DATASETS_DIR:-./backend/datasets}/stress_testing_data/super_light:/opt/airflow/stress_testing_data/super_light
+      - ${DATASETS_DIR:-./backend/datasets}/stress_testing_data/light:/opt/airflow/stress_testing_data/light
+      - ${DATASETS_DIR:-./backend/datasets}/stress_testing_data/slightly_heavy:/opt/airflow/stress_testing_data/slightly_heavy
+      - ${DATASETS_DIR:-./backend/datasets}/stress_testing_data/heavy:/opt/airflow/stress_testing_data/heavy
+      - ${DATASETS_DIR:-./backend/datasets}/stress_testing_results:/opt/airflow/stress_testing_results
+      - ${AIRFLOW_PROJ_DIR:-.}/backend/helper_datasets:/opt/airflow/helper_datasets
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
@@ -181,23 +189,24 @@ services:
       # See https://airflow.apache.org/docs/docker-stack/entrypoint.html#signal-propagation
       DUMB_INIT_SETSID: "0"
     volumes:
-      - ./dags:/opt/airflow/dags
-      - ./scripts:/opt/airflow/scripts
-      - ./config:/opt/airflow/config
-      - ./helper_scripts:/opt/airflow/helper_scripts
-      - /mnt/e/MASTERS/CU_Boulder_Acads/Semester_4/BDA/Project_Docs/Datasets/uncomtrade-data/threaded:/opt/airflow/uncomtrade_data_threaded
-      - /mnt/e/MASTERS/CU_Boulder_Acads/Semester_4/BDA/Project_Docs/Datasets/uncomtrade-data/unthreaded:/opt/airflow/uncomtrade_data_unthreaded
-      - /mnt/e/MASTERS/CU_Boulder_Acads/Semester_4/BDA/Project_Docs/Datasets/macroecon-data/threaded:/opt/airflow/macroecon_data_threaded
-      - /mnt/e/MASTERS/CU_Boulder_Acads/Semester_4/BDA/Project_Docs/Datasets/macroecon-data/unthreaded:/opt/airflow/macroecon_data_unthreaded
-      - /mnt/e/MASTERS/CU_Boulder_Acads/Semester_4/BDA/Project_Docs/Datasets/yahoo_finance_dataset/ticker_data_individual:/opt/airflow/yahoo_finance_dataset/ticker_data_individual
-      - /mnt/e/MASTERS/CU_Boulder_Acads/Semester_4/BDA/Project_Docs/Datasets/yahoo_finance_dataset/ticker_data_combined:/opt/airflow/yahoo_finance_dataset/ticker_data_combined
-      - /mnt/e/MASTERS/CU_Boulder_Acads/Semester_4/BDA/Project_Docs/Datasets/stress_testing_data/super_light:/opt/airflow/stress_testing_data/super_light
-      - /mnt/e/MASTERS/CU_Boulder_Acads/Semester_4/BDA/Project_Docs/Datasets/stress_testing_data/light:/opt/airflow/stress_testing_data/light
-      - /mnt/e/MASTERS/CU_Boulder_Acads/Semester_4/BDA/Project_Docs/Datasets/stress_testing_data/slightly_heavy:/opt/airflow/stress_testing_data/slightly_heavy
-      - /mnt/e/MASTERS/CU_Boulder_Acads/Semester_4/BDA/Project_Docs/Datasets/stress_testing_data/heavy:/opt/airflow/stress_testing_data/heavy
-      - /mnt/e/MASTERS/CU_Boulder_Acads/Semester_4/BDA/Project_Docs/Datasets/stress_testing_results:/opt/airflow/stress_testing_results
-      - ./requirements.txt:/opt/airflow/requirements.txt
-      - ./helper_datasets:/opt/airflow/helper_datasets
+      - ${AIRFLOW_PROJ_DIR:-.}/backend/dags:/opt/airflow/dags
+      - ${AIRFLOW_PROJ_DIR:-.}/backend/logs:/opt/airflow/logs
+      - ${AIRFLOW_PROJ_DIR:-.}/backend/config:/opt/airflow/config
+      - ${AIRFLOW_PROJ_DIR:-.}/backend/plugins:/opt/airflow/plugins
+      - ${AIRFLOW_PROJ_DIR:-.}/backend/scripts:/opt/airflow/scripts
+      - ${AIRFLOW_PROJ_DIR:-.}/backend/requirements.txt:/opt/airflow/requirements.txt
+      - ${AIRFLOW_PROJ_DIR:-.}/backend/helper_datasets:/opt/airflow/helper_datasets
+      - ${DATASETS_DIR:-./backend/datasets}/uncomtrade-data/threaded:/opt/airflow/uncomtrade_data_threaded
+      - ${DATASETS_DIR:-./backend/datasets}/uncomtrade-data/unthreaded:/opt/airflow/uncomtrade_data_unthreaded
+      - ${DATASETS_DIR:-./backend/datasets}/macroecon-data/threaded:/opt/airflow/macroecon_data_threaded
+      - ${DATASETS_DIR:-./backend/datasets}/macroecon-data/unthreaded:/opt/airflow/macroecon_data_unthreaded
+      - ${DATASETS_DIR:-./backend/datasets}/yahoo_finance_dataset/ticker_data_individual:/opt/airflow/yahoo_finance_dataset/ticker_data_individual
+      - ${DATASETS_DIR:-./backend/datasets}/yahoo_finance_dataset/ticker_data_combined:/opt/airflow/yahoo_finance_dataset/ticker_data_combined
+      - ${DATASETS_DIR:-./backend/datasets}/stress_testing_data/super_light:/opt/airflow/stress_testing_data/super_light
+      - ${DATASETS_DIR:-./backend/datasets}/stress_testing_data/light:/opt/airflow/stress_testing_data/light
+      - ${DATASETS_DIR:-./backend/datasets}/stress_testing_data/slightly_heavy:/opt/airflow/stress_testing_data/slightly_heavy
+      - ${DATASETS_DIR:-./backend/datasets}/stress_testing_data/heavy:/opt/airflow/stress_testing_data/heavy
+      - ${DATASETS_DIR:-./backend/datasets}/stress_testing_results:/opt/airflow/stress_testing_results
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
@@ -281,7 +290,7 @@ services:
       _PIP_ADDITIONAL_REQUIREMENTS: ''
     user: "0:0"
     volumes:
-      - ${AIRFLOW_PROJ_DIR:-.}:/sources
+      - ${AIRFLOW_PROJ_DIR:-.}/backend:/sources
 
   airflow-cli:
     <<: *airflow-common

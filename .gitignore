@@ -1,41 +1,29 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+#
+# Next.js-specific ignores (node_modules, .next/, etc.) live in frontend/.gitignore,
+# since the Next.js app root is frontend/, not the repo root.
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
+# OS/editor cruft
 .DS_Store
-*.pem
+Thumbs.db
 
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
+# supabase CLI local state (project ref, pooler URL, tool versions)
+supabase/.temp/
 
-# env files (can opt-in for committing if needed)
-.env*
+# real API keys/config - copy the .example version and fill it in locally
+backend/config/uncomtrade-api-key.json
 
-# vercel
-.vercel
+# local Airflow runtime output
+backend/logs/
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# large raw datasets used by the Airflow DAGs - not meant to be committed
+# (point DATASETS_DIR in your .env elsewhere if you keep them outside the repo)
+backend/datasets/*
+!backend/datasets/readme.md
+backend/helper_datasets/*.csv
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/

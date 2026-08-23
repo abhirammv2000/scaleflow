@@ -8,7 +8,6 @@ export async function POST(request: NextRequest) {
     // Parse the request body
     const body = (await request.json()) as MatrixQARequest;
     console.log("[MATRIX_QA_POST] Request body:", body);
-    const query = body.messages[body.messages.length - 1].content;
 
     if (!body.sheetId) {
       console.error("[MATRIX_QA_POST] Missing query or sheetId");

@@ -51,9 +51,19 @@ export function SheetPageClient({ sheetData, sheetId }: SheetPageClientProps) {
       </div>
 
       {/* Main content area with fixed height */}
-      <div className='flex-grow grid grid-cols-1 lg:grid-cols-1 gap-4 p-4 h-[calc(100vh-64px)] overflow-hidden'>
+      <div className='flex-grow grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 h-[calc(100vh-64px)] overflow-hidden'>
+        {/* Data grid, so citation clicks have something to scroll to and highlight */}
+        <div className='h-full overflow-hidden'>
+          <SheetGrid
+            columns={columns}
+            rows={rows}
+            cells={cells}
+            highlightedCell={highlightedCell}
+          />
+        </div>
+
         {/* QA Chat with fixed height */}
-        <div className='lg:col-span-1 h-full overflow-hidden'>
+        <div className='h-full overflow-hidden'>
           <QAChatInterface
             sheetId={sheetId}
             onCitationClick={handleCitationClick}

@@ -1,6 +1,5 @@
 import OpenAI from "openai";
 import { z } from "zod";
-import { Evidence } from "@/lib/types";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const REASONING_MODEL = "gpt-4o";
