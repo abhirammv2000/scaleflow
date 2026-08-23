@@ -30,7 +30,7 @@ Supply chain disruptions—from natural disasters to macroeconomic shocks—pose
 
 ## Architecture Diagram
 
-![Architecture](https://github.com/ShreCodes2809/scaleflow/blob/main/results/Scaleflow_Architecture_Diagram.png)
+![Architecture](results/Scaleflow_Architecture_Diagram.png)
 
 ---
 
@@ -141,17 +141,34 @@ Content-Type: application/json
 
 ```bash
 # Clone the repo
-$ git clone https://github.com/your-username/scaleflow.git
+$ git clone https://github.com/abhirammv2000/scaleflow.git
 $ cd scaleflow
 
-# Copy and configure environment variables
+# Copy and configure environment variables for the Airflow stack
 $ cp .env.example .env
 
-# Start Docker containers
+# Get a UN Comtrade API key (https://comtradedeveloper.un.org/signin)
+# and drop it into backend/config/uncomtrade-api-key.json
+$ cp backend/config/uncomtrade-api-key.example.json backend/config/uncomtrade-api-key.json
+
+# Add the raw datasets the DAGs expect - see backend/datasets/readme.md and
+# backend/helper_datasets/readme.md for the layout (or point DATASETS_DIR in
+# .env at wherever you already keep them)
+
+# Start Docker containers (builds the custom Airflow image the first time)
 $ docker-compose up --build -d
 
-# Access Airflow UI
+# Access Airflow UI (login: airflow / airflow, unless you changed it in .env)
 Visit: http://localhost:8080
+```
+
+For the frontend:
+
+```bash
+$ cd frontend
+$ cp .env.example .env.local   # fill in Clerk/Supabase/Pinecone/OpenAI keys
+$ npm install
+$ npm run dev
 ```
 
 ---
@@ -162,19 +179,21 @@ Visit: http://localhost:8080
 scaleflow/
 ├── backend/
 │   ├── dags/                  # Airflow DAGs
-│   ├── scripts/               # Python ETL Scripts
-│   ├── config/                # API keys and secrets
-│   ├── output_data/           # Output CSVs, logs
-│   └── requirements.txt       # Python dependencies
-├── frontend/
-│   ├── app/                   # Next.js entry
-│   ├── components/            # Chat UI components
-│   ├── pages/api/qa.ts        # Matrix QA API endpoint
-│   └── services/              # Agents, LangChain logic
-├── database/
-│   └── schema.sql             # PostgreSQL schema
-├── docker-compose.yml         # Local stack
-├── .env.example               # Sample ENV variables
+│   ├── scripts/               # Standalone Python ETL scripts
+│   ├── config/                # Dockerfile + uncomtrade-api-key.json (gitignored;
+│   │                          #   copy uncomtrade-api-key.example.json)
+│   ├── datasets/               # Raw input datasets (gitignored, see its readme.md)
+│   ├── helper_datasets/        # Small helper inputs, e.g. companies.csv (gitignored)
+│   ├── output_data/            # Committed stress-test/aggregation result CSVs
+│   └── requirements.txt        # Python dependencies
+├── frontend/                   # Next.js 15 app (App Router)
+│   ├── app/                    # Routes, incl. app/api/qa/route.ts (Matrix QA endpoint)
+│   ├── components/             # Chat + sheet-grid UI components
+│   └── lib/                    # Agents, services, Supabase/Pinecone clients
+├── supabase/                   # Supabase project config (supabase/config.toml)
+├── results/                    # Architecture diagram + stress-test/eval screenshots
+├── docker-compose.yaml         # Local Airflow + Postgres + Redis stack
+├── .env.example                # Sample ENV variables for docker-compose
 ├── LICENSE
 └── README.md
 ```
@@ -192,7 +211,7 @@ We thoroughly tested ScaleFlow's performance across frontend AI integration and 
 * Four ingestion modes were tested: `super_light`, `light`, `slightly_heavy`, and `heavy`.
 * Key metrics included total execution time and memory usage per mode:
 
-![Stress Test - Execution Time vs Memory](https://github.com/ShreCodes2809/scaleflow/blob/main/results/exec_time_vs_mem.png)
+![Stress Test - Execution Time vs Memory](results/exec_time_vs_mem.png)
 
 * Findings:
 
@@ -204,7 +223,7 @@ We thoroughly tested ScaleFlow's performance across frontend AI integration and 
 * Five types of queries tested: `avg_close_price`, `max_high_min_low`, `monthly_volume`, `total_volume`, and `volatility`.
 * Executed under four stress modes from `super_light` to `heavy`.
 
-![Aggregation Query Time](https://github.com/ShreCodes2809/scaleflow/blob/main/results/agg_query_exec_time_vs_sm.png)
+![Aggregation Query Time](results/agg_query_exec_time_vs_sm.png)
 
 * Findings:
 
@@ -217,7 +236,7 @@ We thoroughly tested ScaleFlow's performance across frontend AI integration and 
 
 **Benchmark Metrics** (based on 10-query evaluation):
 
-![Chatbot Evaluation Metrics](https://github.com/ShreCodes2809/scaleflow/blob/main/results/chatbot_eval.png)
+![Chatbot Evaluation Metrics](results/chatbot_eval.png)
 
 * **Accuracy**: 90% of queries yielded factually correct responses.
 * **Citation Quality**: 100% of responses included verifiable, inline citations.
@@ -227,7 +246,7 @@ We thoroughly tested ScaleFlow's performance across frontend AI integration and 
 
 ### API Performance & Streaming Analysis
 
-![API Latency](https://github.com/ShreCodes2809/scaleflow/blob/main/results/api_strm_perf.png)
+![API Latency](results/api_strm_perf.png)
 
 * **Average First Token Latency**: \~400ms
 * **Peak Latency (under load)**: \~1100ms
@@ -251,6 +270,12 @@ We thoroughly tested ScaleFlow's performance across frontend AI integration and 
 * Chatbot memory and history personalization
 * Deploy across multiple industry domains
 * Serverless global deployment (Cloud Run, Lambda)
+
+---
+
+## License
+
+MIT - see [LICENSE](LICENSE).
 
 ---
 

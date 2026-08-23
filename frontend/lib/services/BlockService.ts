@@ -2,7 +2,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { supabase } from "@/lib/db/supabase"; // Use the shared client
 import {
-  Block,
   BlockTypeEnum,
   CellBlock,
   ColumnBlock,
