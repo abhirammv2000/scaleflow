@@ -75,7 +75,7 @@ def main():
         futures = [executor.submit(fetch_and_save, ind) for ind in INDICATORS]
         for future in as_completed(futures):
             print(future.result())
-    
+
     end_time = time.time()
     print(f"\n Time taken for extracting data threading with {MAX_WORKERS} workers: {end_time - start_time:.2f} seconds")
 

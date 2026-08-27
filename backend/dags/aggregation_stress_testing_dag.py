@@ -103,17 +103,17 @@ def get_queries():
     table_name = TABLE_MAPPING[mode]
 
     queries = {
-        "total_volume": f"""SELECT {', '.join(config['group_by'])}, SUM(volume) as total_volume 
+        "total_volume": f"""SELECT {', '.join(config['group_by'])}, SUM(volume) as total_volume
                             FROM {table_name}
                             GROUP BY {', '.join(config['group_by'])}
                             LIMIT {config['sample_size']}""",
 
-        "avg_close_price": f"""SELECT {', '.join(config['group_by'])}, AVG(close) as avg_close 
+        "avg_close_price": f"""SELECT {', '.join(config['group_by'])}, AVG(close) as avg_close
                                FROM {table_name}
                                GROUP BY {', '.join(config['group_by'])}
                                LIMIT {config['sample_size']}""",
 
-        "max_high_min_low": f"""SELECT {', '.join(config['group_by'])}, MAX(high) as max_high, MIN(low) as min_low 
+        "max_high_min_low": f"""SELECT {', '.join(config['group_by'])}, MAX(high) as max_high, MIN(low) as min_low
                                 FROM {table_name}
                                 GROUP BY {', '.join(config['group_by'])}
                                 LIMIT {config['sample_size']}""",

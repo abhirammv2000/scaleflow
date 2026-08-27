@@ -1,30 +1,30 @@
 # ScaleFlow: AI-Powered Supply Chain Risk Prediction
 
-**ScaleFlow** is a full-stack, containerized platform that uses machine learning models, batch-processed data pipelines, and a real-time chatbot interface driven by artificial intelligence to forecast supply chain risks. It provides scalable insights from financial, trade, and macroeconomic datasets and is built with Apache Airflow, PostgreSQL, and Docker. It is also integrated with LangChain and GPT-4o.
+ScaleFlow forecasts supply chain risk from financial, trade and macroeconomic data. It is a containerized full-stack app: Airflow runs the batch pipelines, PostgreSQL and Pinecone hold the data, and a LangChain and GPT-4o chat interface sits on top for asking questions about it.
 
 ---
 
 ## Table of Contents
 
-* [Project Overview](#-project-overview)
-* [Architecture Diagram](#-architecture-diagram)
-* [Features](#-features)
-* [Backend Overview](#-backend-overview)
-* [Frontend Overview](#-frontend-overview)
-* [Data Sources](#-data-sources)
-* [Evaluation Metrics](#-evaluation-metrics)
-* [Deployment](#-deployment)
-* [Setup Instructions](#-setup-instructions)
-* [Folder Structure](#-folder-structure)
-* [Results](#-results)
-* [Future Work](#-future-work)
-* [License](#-license)
+* [Project Overview](#project-overview)
+* [Architecture Diagram](#architecture-diagram)
+* [Features](#features)
+* [Backend Overview](#backend-overview)
+* [Frontend Overview](#frontend-overview)
+* [Data Sources](#data-sources)
+* [Evaluation Metrics](#evaluation-metrics)
+* [Deployment](#deployment)
+* [Setup Instructions](#setup-instructions)
+* [Folder Structure](#folder-structure)
+* [Results](#results)
+* [Future Work](#future-work)
+* [License](#license)
 
 ---
 
 ## Project Overview
 
-Supply chain disruptions—from natural disasters to macroeconomic shocks—pose major risks to global commerce. **ScaleFlow** predicts potential disruptions by leveraging historical data, economic indicators, weather data, and market sentiment through machine learning. It also offers real-time insights via a chat-based Q\&A interface built with LangChain and OpenAI LLMs.
+Supply chain disruptions, whether from natural disasters or macroeconomic shocks, are a real risk to global commerce. ScaleFlow predicts them from historical data, economic indicators, weather data and market sentiment, and lets you ask about the results through a chat interface built on LangChain and OpenAI.
 
 ---
 
@@ -97,10 +97,10 @@ Content-Type: application/json
 
 ## Data Sources
 
-* **UN Comtrade API** — Global trade statistics
-* **World Bank API** — GDP, inflation, macro indicators
-* **Yahoo Finance** — 6000+ tickers, 20 years of stock data
-* **OpenWeather API** — Weather and disaster logs (optional)
+* **UN Comtrade API** - Global trade statistics
+* **World Bank API** - GDP, inflation, macro indicators
+* **Yahoo Finance** - 6000+ tickers, 20 years of stock data
+* **OpenWeather API** - Weather and disaster logs (optional)
 
 ---
 
@@ -202,7 +202,7 @@ scaleflow/
 
 ## Results
 
-We thoroughly tested ScaleFlow's performance across frontend AI integration and backend data pipelines to confirm its scalability and resilience. The findings demonstrate the system's capacity to manage large data intake, carry out intricate aggregations under pressure, and provide precise, instantaneous responses via an AI-powered chatbot. From user input to database retrieval and dynamic streaming response, integration tests further validated the end-to-end architecture's stability and consistency.
+ScaleFlow was tested across the frontend AI integration and backend data pipelines to confirm its scalability and resilience. The findings demonstrate the system's capacity to manage large data intake, carry out intricate aggregations under pressure, and provide precise, instantaneous responses via an AI-powered chatbot. From user input to database retrieval and dynamic streaming response, integration tests further validated the end-to-end architecture's stability and consistency.
 
 ### Backend Stress Testing
 
@@ -256,10 +256,10 @@ We thoroughly tested ScaleFlow's performance across frontend AI integration and 
 
 ### Integration Verification
 
-* ✅ **API Response Success Rate**: 95% (19/20 queries handled successfully)
-* ✅ **Vector Retrieval**: Pinecone + Supabase returned relevant results on every run
-* ✅ **Citation Injection**: All streaming responses included accurate citations
-* ✅ **Full-stack Pipeline Stability**: End-to-end flow (UI → API → LLM → DBs → UI) worked without breaking across test rounds
+* **API Response Success Rate**: 95% (19/20 queries handled successfully)
+* **Vector Retrieval**: Pinecone + Supabase returned relevant results on every run
+* **Citation Injection**: All streaming responses included accurate citations
+* **Full-stack Pipeline Stability**: End-to-end flow (UI -> API -> LLM -> DBs -> UI) worked without breaking across test rounds
 
 ---
 

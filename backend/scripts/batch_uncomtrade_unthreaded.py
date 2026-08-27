@@ -87,10 +87,10 @@ for reporter, period in product(top_reporters, periods):
 
             status = "TRUNCATED" if truncated else "OK"
             volume_flag = "(Low Volume)" if low_volume else ""
-            print(f"{status} {reporter}-{period} → {row_count} rows {volume_flag} → Saved: {csv_filename}")
+            print(f"{status} {reporter}-{period} -> {row_count} rows {volume_flag} -> Saved: {csv_filename}")
         else:
             print(f"No data found for {reporter}-{period}.")
-        
+
         calls_made += 1
         time.sleep(4)  # Throttle to ~15 calls/min
 

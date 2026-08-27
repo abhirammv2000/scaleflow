@@ -164,8 +164,8 @@ Each object in the 'plan' array MUST have 'type', 'filters', and 'reasoning'.
             "flowCode": "X",
             "refYear": 2023,
             "refMonth": 11,
-            "isAggregate": false, 
-            "columnIds": ["fobvalue", "reporterDesc", "partnerDesc", "cmdDesc"] 
+            "isAggregate": false,
+            "columnIds": ["fobvalue", "reporterDesc", "partnerDesc", "cmdDesc"]
           },
           "reasoning": "Retrieve individual export transactions for Australia in Nov 2023 to sum their FOB values."
         }
@@ -176,12 +176,12 @@ Each object in the 'plan' array MUST have 'type', 'filters', and 'reasoning'.
           "filters": {
             "rowIds": ["*"],
             "reporterISO": "AUS",
-            "partnerISO": "WLD", 
-            "cmdCode": "TOTAL", 
+            "partnerISO": "WLD",
+            "cmdCode": "TOTAL",
             "flowCode": "X",
             "refYear": 2023,
             "refMonth": 11,
-            "isAggregate": true, 
+            "isAggregate": true,
             "columnIds": ["fobvalue", "reporterDesc"]
           },
           "reasoning": "Retrieve the pre-aggregated total export row for Australia in Nov 2023."
@@ -196,13 +196,13 @@ Each object in the 'plan' array MUST have 'type', 'filters', and 'reasoning'.
           "query": "Germany imports of Wheat commodity 1001 November 2023",
           "filters": {
             "rowIds": ["*"],
-            "reporterISO": "DEU", 
+            "reporterISO": "DEU",
             "cmdCode": "1001",
             "flowCode": "M",
             "refYear": 2023,
             "refMonth": 11,
-            "isAggregate": false, 
-            "columnIds": ["cifvalue", "fobvalue", "netWgt", "partnerDesc"] 
+            "isAggregate": false,
+            "columnIds": ["cifvalue", "fobvalue", "netWgt", "partnerDesc"]
           },
           "reasoning": "Retrieve specific import transactions for Wheat (1001) by Germany in Nov 2023 from all partners."
         }
@@ -220,7 +220,7 @@ Each object in the 'plan' array MUST have 'type', 'filters', and 'reasoning'.
                 "refYear": 2023,
                 "refMonth": 11,
                 "isAggregate": false,
-                "columnIds": ["netWgt", "partnerDesc", "cmdDesc"] 
+                "columnIds": ["netWgt", "partnerDesc", "cmdDesc"]
             },
             "reasoning": "Retrieve net weights for all individual Canadian export transactions in Nov 2023 to find the maximum."
         }

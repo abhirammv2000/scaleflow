@@ -55,7 +55,7 @@ def fetch_stock_data_threaded_combined(ticker_csv, output_folder, start_year=200
                                        batch_size=50, threads=20, retry_limit=3, retry_delay=5, batch_pause=15, ticker_limit=None):
     tickers_df = pd.read_csv(ticker_csv)
     tickers = tickers_df['ticker'].dropna().unique().tolist()
-    
+
     if ticker_limit:
         random.shuffle(tickers)
         tickers = tickers[:ticker_limit]
@@ -107,7 +107,7 @@ def fetch_stock_data_threaded_combined(ticker_csv, output_folder, start_year=200
             futures = {executor.submit(fetch_with_retries, ticker): ticker for ticker in batch}
             for future in as_completed(futures):
                 data, log = future.result()
-                ticker = futures[future] 
+                ticker = futures[future]
                 results.append(log)
                 if data is not None:
                     filename = os.path.join(output_folder, f"{ticker}.csv")
@@ -207,7 +207,7 @@ def load_to_postgres(clean_csv_path, table_name, db_uri):
         except Exception as e:
             print(f"Attempt {attempt+1} failed: {e}")
             time.sleep(delay_seconds * (attempt + 1))  # Exponential backoff: 10s, 20s, 30s...
-    
+
     raise Exception("All attempts to connect to PostgreSQL failed after retries.")
 
 # === CONFIGURATION ===
@@ -236,7 +236,7 @@ def dynamic_fetch_task(**kwargs):
 
     # Track Start Time
     start_time = time.time()
-    
+
     # Memory Before
     process = psutil.Process(os.getpid())
     mem_before = process.memory_info().rss / (1024 * 1024)  # in MB

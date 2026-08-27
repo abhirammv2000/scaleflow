@@ -101,7 +101,7 @@ def process_trade_query(reporter, period, api_key, retry_count=0):
 
             status = "TRUNCATED" if truncated else "OK"
             volume_flag = "(Low Volume)" if low_volume else ""
-            print(f"{status} {reporter}-{period} → {row_count} rows {volume_flag} → Saved: {filename}")
+            print(f"{status} {reporter}-{period} -> {row_count} rows {volume_flag} -> Saved: {filename}")
         else:
             print(f"No data for {reporter}-{period}.")
 
@@ -215,7 +215,7 @@ def clean_merged_data():
         if 'period' in chunk.columns:
             chunk['period'] = chunk['period'].astype(str)
             chunk['period'] = pd.to_datetime(chunk['period'], format='%Y%m', errors='coerce').dt.strftime('%Y-%m')
-        
+
         # STEP 5: Append cleaned chunk to output CSV
         chunk.to_csv(cleaned_path, mode='a', header=(i == 0), index=False)
 

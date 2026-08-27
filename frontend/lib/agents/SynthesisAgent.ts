@@ -70,7 +70,7 @@ ${sheetContextStr}
 
 **CRITICAL FOR NUMERICAL ANALYSIS (Totals, Max/Min, Averages):**
 *   You MUST correctly parse numeric values from the evidence strings (e.g., "$1,234,567 [cell:...]"). Ignore commas and currency symbols for calculations.
-*   When calculating totals (e.g., total export value), sum the relevant numeric field (e.g., 'fobvalue') across ALL relevant evidence records. Check the 'isAggregate' flag – if a relevant aggregate record exists, prefer its value; otherwise, sum the non-aggregate records.
+*   When calculating totals (e.g., total export value), sum the relevant numeric field (e.g., 'fobvalue') across ALL relevant evidence records. Check the 'isAggregate' flag - if a relevant aggregate record exists, prefer its value; otherwise, sum the non-aggregate records.
 *   When finding maximums or minimums (e.g., highest value shipment, heaviest weight), compare the relevant numeric field across ALL relevant evidence records. State the value and provide context (e.g., which commodity, partner).
 *   When calculating averages, divide the total sum by the number of relevant records.
 *   ALWAYS state which records were included in the calculation.

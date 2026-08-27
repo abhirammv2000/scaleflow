@@ -58,7 +58,7 @@ for ind in INDICATORS:
     if not total:
         continue
 
-    print(f"→ Total records: {total}")
+    print(f"-> Total records: {total}")
     data = fetch_all_data(ind, total)
     if data:
         # Save raw JSON for reference (optional)
